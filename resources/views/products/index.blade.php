@@ -25,6 +25,9 @@
           <th>Name</th>
           <th>Price</th>
           <th>Description</th>
+          <th>Author</th>
+          <th>Provider</th>
+          <th>Created at</th>
           <th width="280px">Action</th>
        </tr>
     </thead>
@@ -36,6 +39,9 @@
               <td>{{ $product->name }}</td>
               <td>{{ $product->price }}</td>
               <td>{{ $product->description }}</td>
+              <td>{{ $product->user->name }}</td>
+              <td>{{ $product->provider ? $product->provider->description : '' }}</td>
+              <td>{{ $product->updated_at->format('d/m/Y') }}</td>
               <td>
                     <a class="btn btn-info" href="{{ route('products.show',$product->id) }}">Show</a>
                     <a class="btn btn-primary" href="{{ route('products.edit',$product->id) }}">Edit</a>
@@ -49,7 +55,11 @@
        @endforeach
     </tbody>
 </table>
- 
-{!! $products->links() !!}
- 
+
+
+<div class="mx-auto pt-2">
+ {{ $products->links() }}
+
+</div>
+     
 @endsection

@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Http\Requests\ProdructFormRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
+
+    public function __construct() {
+
+        $this->middleware('auth')->only(['create','edit','update','destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,6 +24,7 @@ class ProductController extends Controller
     {
 
         $products = Product::latest()->paginate(10);
+     
         return view('products.index', compact('products'))
              ->with('i', (request()->input('page', 1) - 1) * 10);
     }
@@ -33,18 +42,20 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProdructFormRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'description' => 'required',
+        
+        $request->validated();
+
+        Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'image_path' => $request->image_path
         ]);
- 
-        Product::create($request->all());
  
         return redirect()
             ->route('products.index')
@@ -54,7 +65,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  App\Models\Product  $product
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function show(Product $product)
@@ -65,7 +76,7 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  App\Models\Product  $product
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
@@ -76,17 +87,13 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Models\Product  $product
+     * @param  \App\Http\Requests  $request
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProdructFormRequest $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'description' => 'required',
-        ]);
+        $request->validated();
  
         $product->update($request->all());
  
@@ -98,7 +105,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  App\Models\Product  $product
+     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product)
@@ -108,5 +115,18 @@ class ProductController extends Controller
         return redirect()
             ->route('products.index')
             ->with('success', 'Product has successfully deleted.');
+    }
+
+    /**
+     * Return the image path.
+     *
+     * @param  Illuminate\Http\Request;  $request
+     * @return image_path
+     */
+    private function storeImage(Request $request)
+    {
+        $newImageName = uniqid() . '-' . $request->name . '.' . $request->photo->extension();
+ 
+        return $request->photo->move(public_path('images'), $newImageName);
     }
 }

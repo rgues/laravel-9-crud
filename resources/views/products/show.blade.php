@@ -33,5 +33,12 @@
          {{ $product->description }}
       </div>
    </div>
+
+   <div class="col-xs-12 col-sm-12 col-md-12">
+    <h3>Categories : </h3>
+      @foreach ($product->categories as $category)
+            <p>{{ $category->title }}</p>
+      @endforeach
+   </div>
 </div>
 @endsection

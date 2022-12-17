@@ -18,5 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// configure all routes of products
-Route::resource('products', ProductController::class);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+Route::resource('products',ProductController::class);
+
+require __DIR__.'/auth.php';
