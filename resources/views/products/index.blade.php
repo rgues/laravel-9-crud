@@ -1,6 +1,8 @@
 @extends('products.layout')
  
 @section('content')
+
+@if (Auth::user())
 <div class="row">
    <div class="col-lg-12 margin-tb">
       <div class="pull-left">
@@ -11,7 +13,9 @@
       </div>
    </div>
 </div>
- 
+@endif
+
+
 @if ($message = Session::get('success'))
 <div class="alert alert-success">
    <p>{{ $message }}</p>
@@ -44,18 +48,24 @@
               <td>{{ $product->updated_at->format('d/m/Y') }}</td>
               <td>
                     <a class="btn btn-info" href="{{ route('products.show',$product->id) }}">Show</a>
+                   
+                    @if (Auth::id() === $product->user->id)
+
                     <a class="btn btn-primary" href="{{ route('products.edit',$product->id) }}">Edit</a>
+
                     <form action="{{ route('products.destroy',$product->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
+
+                    @endif
+                  
                 </td>
            </tr>
        @endforeach
     </tbody>
 </table>
-
 
 <div class="mx-auto pt-2">
  {{ $products->links() }}

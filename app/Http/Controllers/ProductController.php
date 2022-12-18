@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Requests\ProdructFormRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -50,11 +51,13 @@ class ProductController extends Controller
         
         $request->validated();
 
+
         Product::create([
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
-            'image_path' => $request->image_path
+            'image_path' => $request->image_path,
+             'user_id' => Auth::id() ? Auth::id() : null
         ]);
  
         return redirect()
